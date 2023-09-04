@@ -43,23 +43,11 @@ enum class ContactMode(val contentUri: Uri,
 
 }
 
-val groupProjections: Array<String> = arrayOf(
-        Groups.SOURCE_ID,
-        Groups.ACCOUNT_TYPE,
-        Groups.ACCOUNT_NAME,
-        Groups.DELETED,
-        Groups.FAVORITES,
-        Groups.TITLE,
-        Groups.NOTES)
-
-
 private val contactProjectionsIdOnly: Array<String> = arrayOf(
         Data.CONTACT_ID,
         Profile.DISPLAY_NAME)
 
 private val contactProjections: Array<String> = arrayOf(
-
-        Data.CONTACT_LAST_UPDATED_TIMESTAMP,
         Profile.DISPLAY_NAME,
         Data.MIMETYPE,
         CommonDataKinds.StructuredName.DISPLAY_NAME,
@@ -71,47 +59,11 @@ private val contactProjections: Array<String> = arrayOf(
         CommonDataKinds.Identity.RAW_CONTACT_ID,
         CommonDataKinds.Identity.CONTACT_ID,
         CommonDataKinds.Identity.LOOKUP_KEY,
-        CommonDataKinds.Note.NOTE,
 
         /// Phone
         CommonDataKinds.Phone.NUMBER,
         CommonDataKinds.Phone.TYPE,
         CommonDataKinds.Phone.LABEL,
-
-        /// Email
-        CommonDataKinds.Email.DATA,
-        CommonDataKinds.Email.ADDRESS,
-        CommonDataKinds.Email.TYPE,
-        CommonDataKinds.Email.LABEL,
-
-        /// URLs
-        CommonDataKinds.Website.DATA,
-        CommonDataKinds.Website.URL,
-        CommonDataKinds.Website.TYPE,
-        CommonDataKinds.Website.LABEL,
-
-        CommonDataKinds.GroupMembership.GROUP_SOURCE_ID,
-
-        /// Events
-        CommonDataKinds.Event.TYPE,
-        CommonDataKinds.Event.LABEL,
-        CommonDataKinds.Event.START_DATE,
-
-        /// Companies
-        CommonDataKinds.Organization.COMPANY,
-        CommonDataKinds.Organization.TITLE,
-
-        /// Postal address
-        CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS,
-        CommonDataKinds.StructuredPostal.TYPE,
-        CommonDataKinds.StructuredPostal.LABEL,
-        CommonDataKinds.StructuredPostal.STREET,
-        CommonDataKinds.StructuredPostal.POBOX,
-        CommonDataKinds.StructuredPostal.NEIGHBORHOOD,
-        CommonDataKinds.StructuredPostal.CITY,
-        CommonDataKinds.StructuredPostal.REGION,
-        CommonDataKinds.StructuredPostal.POSTCODE,
-        CommonDataKinds.StructuredPostal.COUNTRY,
 
         Data.DATA1,
         Data.DATA2,

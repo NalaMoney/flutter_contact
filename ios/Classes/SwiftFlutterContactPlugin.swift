@@ -34,21 +34,13 @@ public class SwiftFlutterContactPlugin: NSObject, FlutterPlugin {
     }
     
     let contactFetchKeys:[Any] = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                                  CNContactBirthdayKey,
-                                  CNContactDatesKey,
-                                  CNContactEmailAddressesKey,
                                   CNContactFamilyNameKey,
-                                  CNContactGivenNameKey,
-                                  CNContactJobTitleKey,
+                                  CNContactGivenNameKey,                       
                                   CNContactMiddleNameKey,
                                   CNContactNamePrefixKey,
                                   CNContactNameSuffixKey,
-                                  CNContactThumbnailImageDataKey,
-                                  CNContactOrganizationNameKey,
-                                  CNContactPhoneNumbersKey,
-                                  CNContactPostalAddressesKey,
-                                  CNContactSocialProfilesKey,
-                                  CNContactUrlAddressesKey]
+                                  CNContactThumbnailImageDataKey,                            
+                                  CNContactPhoneNumbersKey]
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         
@@ -98,8 +90,6 @@ public class SwiftFlutterContactPlugin: NSObject, FlutterPlugin {
                     result(contactDictionary)
                 case "getUnifySummary":
                     result(try self.calculateLinkedContacts())
-                case "getGroups":
-                    result(try self.getGroups())
                 case "addContact":
                     let contact = CNMutableContact()
                     contact.takeFromDictionary(call.args)
@@ -210,27 +200,6 @@ public class SwiftFlutterContactPlugin: NSObject, FlutterPlugin {
         let store = CNContactStore()
         let result = try store.unifiedContact(withIdentifier: singleContactId, keysToFetch: [CNKeyDescriptor]())
         return result.identifier
-    }
-    
-    func getGroups() throws ->[[String:Any?]] {
-        let store = CNContactStore()
-        
-        // Fetch groups
-        let groups:[[String:Any]] = try store.groups(matching: nil)
-            .map { group in
-                var dict = [String:Any]()
-                dict["identifier"] = group.identifier
-                dict["name"] = group.name
-                dict["description"] = group.description
-                dict["contacts"] = try store.unifiedContacts(
-                    matching: CNContact.predicateForContactsInGroup(withIdentifier: group.identifier),
-                    keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor])
-                    .map { $0.identifier }
-                
-                return dict
-        }
-        return groups
-        
     }
     
     func getContacts(query : String?, withThumbnails: Bool, photoHighResolution: Bool, forCount: Bool, withUnifyInfo: Bool,

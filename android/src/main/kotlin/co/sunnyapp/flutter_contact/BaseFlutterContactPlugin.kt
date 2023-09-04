@@ -112,20 +112,6 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
                 .withValue(ContactsContract.CommonDataKinds.StructuredName.SUFFIX, contact.suffix).build()
 
 
-        ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Note.NOTE, contact.note)
-                .build()
-
-
-        ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, contact.company)
-                .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, contact.jobTitle).withYieldAllowed(true)
-                .build()
-
         //Phones
         for (phone in contact.phones) {
             ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -133,48 +119,6 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
                     .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone.value)
                     .withTypeAndLabel(ItemType.phone, phone.label)
-                    .build()
-        }
-
-        //Emails
-        for (email in contact.emails) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email.value)
-                    .withTypeAndLabel(ItemType.email, email.label)
-                    .build()
-        }
-
-        //Postal addresses
-        for (address in contact.postalAddresses) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
-                    .withTypeAndLabel(ItemType.address, address.label)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, address.street)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, address.city)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, address.region)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, address.postcode)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, address.country)
-                    .build()
-        }
-
-        for (date in contact.dates) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)
-                    .withTypeAndLabel(ItemType.event, date.label)
-                    .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, date.toDateValue())
-                    .build()
-        }
-
-        for (url in contact.urls) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
-                    .withTypeAndLabel(ItemType.url, url.label)
-                    .withValue(ContactsContract.CommonDataKinds.Website.URL, url.value)
                     .build()
         }
 
@@ -202,13 +146,8 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
     protected fun updateContact(contact: Contact): Struct {
         val ops = arrayListOf<ContentProviderOperation>()
 
-        ops += listOf(ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE,
-                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-                ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
-                ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE,
-                ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE,
-                ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE,
-                ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE
+        ops += listOf(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
         ).map {
             ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
                     .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
@@ -236,18 +175,9 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
 
         // Insert data back into contact
         ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
-                .withValue(ContactsContract.CommonDataKinds.Organization.TYPE, ContactsContract.CommonDataKinds.Organization.TYPE_WORK)
-                .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, contact.company)
-                .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, contact.jobTitle)
                 .build()
 
-        ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
-                .withValue(ContactsContract.CommonDataKinds.Note.NOTE, contact.note)
-                .build()
 
         for (phone in contact.phones) {
             ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -258,47 +188,6 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
                     .build()
         }
 
-        for (email in contact.emails) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
-                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email.value)
-                    .withTypeAndLabel(ItemType.email, email.label)
-                    .build()
-        }
-
-        for (address in contact.postalAddresses) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
-                    .withTypeAndLabel(ItemType.address, address.label)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, address.street)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, address.city)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, address.region)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, address.postcode)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, address.country)
-                    .build()
-        }
-
-
-
-        for (date in contact.dates) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
-                    .withTypeAndLabel(ItemType.event, date.label)
-                    .withValue(ContactsContract.CommonDataKinds.Event.START_DATE, date.toDateValue())
-                    .build()
-        }
-
-        for (url in contact.urls) {
-            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
-                    .withTypeAndLabel(ItemType.url, url.label)
-                    .withValue(ContactsContract.CommonDataKinds.Website.URL, url.value)
-                    .build()
-        }
 
         resolver.applyBatch(ContactsContract.AUTHORITY, ops)
         val updated = getContact(contact.keys
