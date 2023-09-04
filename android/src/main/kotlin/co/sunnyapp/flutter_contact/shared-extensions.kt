@@ -44,10 +44,6 @@ object ErrorCodes {
     const val INVALID_PARAMETER = "invalidParameter"
 }
 
-fun ContentResolver.listAllGroups(): Cursor? {
-    return query(ContactsContract.Groups.CONTENT_URI, groupProjections, null, null, null)
-}
-
 fun Cursor.toInputStream(): InputStream? {
     return getBlob(0)?.let {
         return ByteArrayInputStream(it)

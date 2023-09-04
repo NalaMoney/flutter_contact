@@ -7,13 +7,10 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.os.Build
-import android.provider.ContactsContract
 import android.provider.ContactsContract.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.sql.Timestamp
-import java.time.Instant
 import java.util.*
 
 interface ContactExtensions {
@@ -31,15 +28,8 @@ interface ContactExtensions {
         var selectionArgs = when (forCount) {
             true -> arrayOf()
             false -> arrayOf(
-                    CommonDataKinds.Note.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.Email.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.Website.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.Event.CONTENT_ITEM_TYPE,
                     CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.Organization.CONTENT_ITEM_TYPE,
-                    CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
+                    CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
             )
         }
         var selection = selectionArgs.joinToString(separator = " OR ") { "${Data.MIMETYPE}=?" }
@@ -120,16 +110,6 @@ interface ContactExtensions {
 
                 val mimeType = cursor.string(Data.MIMETYPE)
 
-                //            if (isPrimary) {
-                //                contact.displayName = contact.displayName
-                //                        ?: cursor.string(CommonDataKinds.Nickname.DISPLAY_NAME)
-                //            }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    cursor.long(Data.CONTACT_LAST_UPDATED_TIMESTAMP)?.also {
-                        contact.lastModified = contact.lastModified ?: Date(it)
-                    }
-                }
 
                 // set the display name as primary and outside the mime type check.
                 // if the raw contact has no name then there will be no mime type about name data,
@@ -150,50 +130,10 @@ interface ContactExtensions {
                         contact.suffix = contact.suffix
                                 ?: cursor.string(CommonDataKinds.StructuredName.SUFFIX)
                     }
-                    CommonDataKinds.Note.CONTENT_ITEM_TYPE -> contact.note = cursor.string(CommonDataKinds.Note.NOTE)
                     CommonDataKinds.Phone.CONTENT_ITEM_TYPE -> {
                         cursor.string(CommonDataKinds.Phone.NUMBER)?.also { phone ->
                             contact.phones += Item(label = cursor.getPhoneLabel(), value = phone)
                         }
-                    }
-
-                    CommonDataKinds.Email.CONTENT_ITEM_TYPE -> {
-                        cursor.string(CommonDataKinds.Email.ADDRESS)?.also { email ->
-                            contact.emails += Item(label = cursor.getEmailLabel(), value = email)
-                        }
-                    }
-                    CommonDataKinds.Event.CONTENT_ITEM_TYPE -> {
-                        cursor.string(CommonDataKinds.Event.START_DATE)?.also { eventDate ->
-                            val tryParse = DateComponents.tryParse(eventDate)
-                            contact.dates += ContactDate(label = cursor.getEventLabel(), date = tryParse, value = eventDate)
-                        }
-                    }
-
-                    CommonDataKinds.Website.CONTENT_ITEM_TYPE -> {
-                        cursor.string(CommonDataKinds.Website.URL)?.also { url ->
-                            contact.urls += Item(label = cursor.getUrlLabel(), value = url)
-                        }
-                    }
-
-                    CommonDataKinds.GroupMembership.CONTENT_ITEM_TYPE -> {
-                        cursor.string(CommonDataKinds.GroupMembership.GROUP_SOURCE_ID)?.also { groupId ->
-                            contact.groups += groupId
-                        }
-                    }
-
-                    CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE -> {
-                        val address = PostalAddress(cursor)
-                        contact.postalAddresses += address
-                    }
-
-                    CommonDataKinds.Organization.CONTENT_ITEM_TYPE -> {
-                        contact.company = contact.company
-                                ?: cursor.string(CommonDataKinds.Organization.COMPANY)
-                        contact.jobTitle = contact.jobTitle
-                                ?: cursor.string(CommonDataKinds.Organization.TITLE)
-                    }
-                    else -> {
-                        println("Ignoring mime: $mimeType")
                     }
                 }
             }
@@ -227,48 +167,6 @@ interface ContactExtensions {
         val keys = keys?.checkValid() ?: return
         val bytes = getAvatarDataForContactIfAvailable(keys, highRes = highRes) ?: return
         this.avatar = bytes
-    }
-
-    /**
-     * Builds the list of contacts from the cursor
-     * @param cursor
-     * @return the list of contacts
-     */
-    @SuppressLint("NewApi")
-    fun Cursor.toGroupList(): List<Group> {
-        val groupsById = mutableMapOf<String, Group>()
-        val cursor = this
-        while (cursor.moveToNext()) {
-            val groupId = cursor.string(Groups.SOURCE_ID) ?: continue
-
-            if (groupId !in groupsById) {
-                groupsById[groupId] = Group(identifier = groupId)
-            }
-            val group = groupsById[groupId]!!
-
-            cursor.int(Groups.FAVORITES)?.also { favorite ->
-                if (favorite > 0) {
-                    group.name = "Favorites"
-                }
-            }
-
-            cursor.string(Groups.TITLE)?.also { name ->
-                group.name = name
-            }
-        }
-
-        if (!isClosed) {
-            close()
-        }
-        resolver.queryContacts()
-                .toContactList(mode, 100, 0)
-                .forEach { contact ->
-                    for (groupId in contact.groups) {
-                        val group = groupsById[groupId] ?: continue
-                        contact.identifier?.let { group.contacts += it.toString() }
-                    }
-                }
-        return groupsById.values.toList()
     }
 }
 

@@ -105,17 +105,7 @@ data class Contact(
         var familyName: String? = null,
         var prefix: String? = null,
         var suffix: String? = null,
-        var company: String? = null,
-        var jobTitle: String? = null,
-        var lastModified: Date? = null,
-        var note: String? = null,
-        val emails: MutableList<Item> = mutableListOf(),
-        val groups: MutableSet<String> = linkedSetOf(),
         val phones: MutableList<Item> = mutableListOf(),
-        val socialProfiles: MutableList<Item> = mutableListOf(),
-        val urls: MutableList<Item> = mutableListOf(),
-        val dates: MutableList<ContactDate> = mutableListOf(),
-        val postalAddresses: MutableList<PostalAddress> = mutableListOf(),
         /// read-only
         val linkedContactIds: MutableList<String> = mutableListOf(),
 
