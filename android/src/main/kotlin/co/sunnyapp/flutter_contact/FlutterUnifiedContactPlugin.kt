@@ -50,13 +50,6 @@ class FlutterAggregateContactPlugin : BaseFlutterContactPlugin(), MethodCallHand
                             withThumbnails = call.argument<Any?>("withThumbnails") == true,
                             photoHighResolution = call.argument<Any?>("photoHighResolution") == true)
                 }
-                "getGroups" -> asyncTask(result) {
-                    resolver.listAllGroups()
-                            ?.toGroupList()
-                            ?.filter { group -> group.contacts.isNotEmpty() }
-                            ?.map { it.toMap() }
-                            ?: emptyList()
-                }
                 "addContact" -> asyncTask(result) {
                     val c = Contact.fromMap(mode, call.arguments as Map<String, *>)
                     this.addContact(c)

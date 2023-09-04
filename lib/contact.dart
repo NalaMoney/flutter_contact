@@ -160,25 +160,9 @@ class Contact {
       this.prefix,
       this.suffix,
       this.familyName,
-      this.company,
-      this.jobTitle,
-      List<String>? linkedContactIds,
-      List<Item>? emails,
       List<Item>? phones,
-      List<PostalAddress>? postalAddresses,
-      List<Item>? socialProfiles,
-      List<Item>? urls,
-      List<ContactDate>? dates,
-      this.avatar,
-      this.lastModified,
-      this.note})
-      : _emails = [...?emails],
-        _phones = [...?phones],
-        _socialProfiles = [...?socialProfiles],
-        _urls = [...?urls],
-        _dates = [...?dates],
-        _linkedContactIds = [...?linkedContactIds],
-        _postalAddresses = [...?postalAddresses];
+      this.avatar})
+      : _phones = [...?phones];
 
   final ContactKeys? keys;
 
@@ -188,20 +172,10 @@ class Contact {
       middleName,
       prefix,
       suffix,
-      familyName,
-      company,
-      jobTitle,
-      note;
+      familyName;
 
-  final List<String> _linkedContactIds;
-  final List<Item> _emails;
   final List<Item> _phones;
-  final List<Item> _socialProfiles;
-  final List<ContactDate> _dates;
-  final List<Item> _urls;
-  final List<PostalAddress> _postalAddresses;
 
-  DateTime? lastModified;
   Uint8List? avatar;
 
   /// If the avatar is already loaded, uses it.  Otherwise, fetches the avatar from the server,
@@ -218,53 +192,11 @@ class Contact {
     }
   }
 
-  List<Item> get emails => _emails;
-
-  set emails(List<Item>? value) {
-    _emails.clear();
-    emails.addAll([...?value]);
-  }
-
   List<Item> get phones => _phones;
 
   set phones(List<Item>? value) {
     _phones.clear();
     phones.addAll([...?value]);
-  }
-
-  List<Item> get socialProfiles => _socialProfiles;
-
-  set socialProfiles(List<Item>? value) {
-    _socialProfiles.clear();
-    _socialProfiles.addAll([...?value]);
-  }
-
-  List<ContactDate> get dates => _dates;
-
-  set dates(List<ContactDate>? value) {
-    _dates.clear();
-    dates.addAll([...?value]);
-  }
-
-  List<String> get linkedContactIds => _linkedContactIds;
-
-  set linkedContactIds(List<String>? value) {
-    _linkedContactIds.clear();
-    _linkedContactIds.addAll([...?value]);
-  }
-
-  List<Item> get urls => _urls;
-
-  set urls(List<Item>? value) {
-    _urls.clear();
-    urls.addAll([...?value]);
-  }
-
-  List<PostalAddress> get postalAddresses => _postalAddresses;
-
-  set postalAddresses(List<PostalAddress>? value) {
-    _postalAddresses.clear();
-    postalAddresses.addAll([...?value]);
   }
 
   bool get hasAvatar => avatar?.isNotEmpty == true;
@@ -295,31 +227,10 @@ class Contact {
       familyName: dyn[_kfamilyName] as String?,
       prefix: dyn[_kprefix] as String?,
       keys: ContactKeys.of(mode, dyn),
-      lastModified: parseDateTime(dyn[_klastModified]),
-      suffix: dyn[_ksuffix] as String?,
-      company: dyn[_kcompany] as String?,
-      jobTitle: dyn[_kjobTitle] as String?,
-      linkedContactIds: <String>[
-        for (final c in _iterableKey(dyn, _klinkedContactIds)) "$c",
-      ],
-      emails: [for (final m in _iterableKey(dyn, _kemails)) Item.fromMap(m)]
-          .notNullList(),
+      suffix: dyn[_ksuffix] as String?,     
       phones: [for (final m in _iterableKey(dyn, _kphones)) Item.fromMap(m)]
           .notNullList(),
-      socialProfiles: [
-        for (final m in _iterableKey(dyn, _ksocialProfiles)) Item.fromMap(m)
-      ].whereType<Item>().toList(),
-      urls: [for (final m in _iterableKey(dyn, _kurls)) Item.fromMap(m)]
-          .notNullList(),
-      dates: [
-        for (final m in _iterableKey(dyn, _kdates)) ContactDate.fromMap(m)
-      ].notNullList(),
-      postalAddresses: [
-        for (final m in _iterableKey(dyn, _kpostalAddresses))
-          PostalAddress.fromMap(m)
-      ].notNullList(),
       avatar: dyn[_kavatar] as Uint8List?,
-      note: dyn[_knote] as String?,
     );
   }
 
@@ -336,21 +247,9 @@ class Contact {
       givenName: this.givenName ?? other.givenName,
       middleName: this.middleName ?? other.middleName,
       prefix: this.prefix ?? other.prefix,
-      lastModified: this.lastModified ?? other.lastModified,
       suffix: this.suffix ?? other.suffix,
       familyName: this.familyName ?? other.familyName,
-      company: this.company ?? other.company,
-      jobTitle: this.jobTitle ?? other.jobTitle,
-      linkedContactIds: this.linkedContactIds + other.linkedContactIds,
-      note: this.note ?? other.note,
-      emails: {...this.emails, ...other.emails}.toList(),
-      socialProfiles:
-          {...this.socialProfiles, ...other.socialProfiles}.toList(),
-      dates: {...this.dates, ...other.dates}.toList(),
-      urls: {...this.urls, ...other.urls}.toList(),
       phones: {...this.phones, ...other.phones}.toList(),
-      postalAddresses:
-          {...this.postalAddresses, ...other.postalAddresses}.toList(),
       avatar: this.avatar ?? other.avatar);
 
   /// Removes duplicates from the collections.  Duplicates are defined as having the exact same value
@@ -364,135 +263,28 @@ class Contact {
     return other is Contact &&
         this.keys == other.keys &&
         this.identifier == other.identifier &&
-        this.company == other.company &&
         this.displayName == other.displayName &&
         this.givenName == other.givenName &&
         this.familyName == other.familyName &&
-        this.jobTitle == other.jobTitle &&
         this.middleName == other.middleName &&
-        this.note == other.note &&
         this.prefix == other.prefix &&
         this.suffix == other.suffix &&
-        this.lastModified == other.lastModified &&
-        DeepCollectionEquality.unordered().equals(this.phones, other.phones) &&
-        DeepCollectionEquality.unordered()
-            .equals(this.socialProfiles, other.socialProfiles) &&
-        DeepCollectionEquality.unordered().equals(this.urls, other.urls) &&
-        DeepCollectionEquality.unordered().equals(this.dates, other.dates) &&
-        DeepCollectionEquality.unordered().equals(this.emails, other.emails) &&
-        DeepCollectionEquality.unordered()
-            .equals(this.postalAddresses, other.postalAddresses);
+        DeepCollectionEquality.unordered().equals(this.phones, other.phones);
   }
 
   @override
   int get hashCode {
-    return hashOf(identifier, keys, company, displayName, lastModified,
-        givenName, familyName, jobTitle, middleName, note, prefix, suffix);
+    return hashOf(
+      identifier,
+      keys,
+      displayName,
+      givenName,
+      familyName,
+      middleName,
+      prefix,
+      suffix,
+    );
   }
-}
-
-class ContactDate {
-  final String? label;
-  final FlexiDate? date;
-  final String? value;
-
-  ContactDate.ofDate({this.label, required FlexiDate this.date})
-      : value = "$date";
-
-  ContactDate.ofValue({
-    this.label,
-    required String this.value,
-    this.date,
-  });
-
-  ContactDate({
-    this.label,
-    this.value,
-    this.date,
-  }) : assert(value != null || date != null);
-
-  static ContactDate? fromMap(final dyn) {
-    if (dyn is Map<dynamic, dynamic>) {
-      if (dyn[_kdate] == null && dyn[_kvalue] == null) {
-        flutterContactLog.warning(
-            "Received date with no value for either 'date' or 'value'");
-        return null;
-      }
-      final label = dyn[_klabel] as String?;
-      FlexiDate? flexi;
-      try {
-        flexi = (dyn[_kdate] != null || dyn[_kvalue] != null)
-            ? FlexiDate.from(dyn[_kdate] ?? dyn[_kvalue])
-            : null;
-      } catch (e) {
-        flutterContactLog.finer("Error parsing date: $dyn");
-      }
-      if (flexi?.isValid == true) {
-        return ContactDate.ofDate(date: flexi!, label: label);
-      } else if (flexi?.isValid == false && flexi?.source != null) {
-        return ContactDate.ofValue(value: "$flexi", label: label);
-      } else {
-        return ContactDate.ofValue(value: dyn[_kvalue] as String, label: label);
-      }
-    }
-    return null;
-  }
-
-  String? get dateOrValue => date?.toString() ?? value;
-
-  @override
-  String toString() {
-    return 'ContactDate{label: $label, date: $date, value: $value}';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ContactDate &&
-          label == other.label &&
-          date == other.date &&
-          value == other.value;
-
-  @override
-  int get hashCode => hashOf(label, date, value);
-}
-
-// ignore: must_be_immutable
-class PostalAddress extends Equatable {
-  PostalAddress(
-      {this.label,
-      this.street,
-      this.city,
-      this.postcode,
-      this.region,
-      this.country});
-
-  String? label, street, city, postcode, region, country;
-
-  static PostalAddress? fromMap(final dyn) {
-    if (dyn is Map) {
-      return PostalAddress(
-        label: dyn[_klabel] as String?,
-        street: dyn[_kstreet] as String?,
-        city: dyn[_kcity] as String?,
-        postcode: dyn[_kpostcode] as String?,
-        region: dyn[_kregion] as String?,
-        country: dyn[_kcountry] as String?,
-      );
-    } else {
-      return null;
-    }
-  }
-
-  @override
-  List get props => [
-        this.label,
-        this.street,
-        this.city,
-        this.country,
-        this.region,
-        this.postcode,
-      ];
 }
 
 /// Item class used for contact fields which only have a [label] and
@@ -574,56 +366,17 @@ Map<String, dynamic> _contactToMap(Contact contact) {
     _kgivenName: contact.givenName,
     _kmiddleName: contact.middleName,
     _kfamilyName: contact.familyName,
-    _klastModified: contact.lastModified?.toIso8601String(),
     _kunifiedContactId: contact.unifiedContactId,
     _ksingleContactId: contact.singleContactId,
     _kotherKeys: contact.otherKeys,
     _kprefix: contact.prefix,
     _ksuffix: contact.suffix,
-    _kcompany: contact.company,
-    _kjobTitle: contact.jobTitle,
-    _kemails: contact.emails.toJson(),
     _kphones: contact.phones.toJson(),
-    _kdates: [
-      for (final item in contact.dates) _contactDateToMap(item),
-    ].notNullList(),
-    _ksocialProfiles: contact.socialProfiles.toJson(),
-    _kurls: contact.urls.toJson(),
-    _kpostalAddresses: [
-      for (final address in contact.postalAddresses) address.toMap(),
-    ].notNullList(),
     _kavatar: contact.avatar,
-    _knote: contact.note
   }.valuesNotNull();
 }
 
 bool Function(T item) notNullList<T>() => (item) => item != null;
-
-extension PostalAddressToMap on PostalAddress? {
-  Map<String, String>? toMap() {
-    if (this == null) return null;
-    final address = this!;
-    final map = {
-      _klabel: address.label,
-      _kstreet: address.street,
-      _kcity: address.city,
-      _kpostcode: address.postcode,
-      _kregion: address.region,
-      _kcountry: address.country
-    }.valuesNotNull();
-
-    /// There will always be a type field, so make sure there's at least one more
-    return map.length <= 1 ? null : map;
-  }
-}
-
-Map<String, dynamic>? _contactDateToMap(ContactDate? date) => date == null
-    ? null
-    : {
-        _klabel: date.label,
-        _kdate: date.date?.toDateMap(),
-        _kvalue: date.value ?? date.date?.toString(),
-      }.valuesNotNull();
 
 typedef PhoneNumberSanitizer = String Function(String?);
 
@@ -664,30 +417,11 @@ const _kdisplayName = "displayName";
 const _kprefix = "prefix";
 const _ksuffix = "suffix";
 const _kfamilyName = "familyName";
-const _kcompany = "company";
 const _kunifiedContactId = "unifiedContactId";
 const _ksingleContactId = "singleContactId";
 const _kotherKeys = "otherKeys";
-const _kjobTitle = "jobTitle";
-const _kemails = "emails";
-const _klinkedContactIds = "linkedContactIds";
 const _kphones = "phones";
-const _kpostalAddresses = "postalAddresses";
-const _ksocialProfiles = "socialProfiles";
-const _kurls = "urls";
-const _kdates = "dates";
 const _kavatar = "avatar";
-const _klabel = "label";
-const _kdate = "date";
-const _kvalue = "value";
-const _knote = "note";
-const _klastModified = "lastModified";
-
-const _kstreet = "street";
-const _kcity = "city";
-const _kpostcode = "postcode";
-const _kregion = "region";
-const _kcountry = "country";
 
 extension FlexiDateToMap on FlexiDate {
   Map<String, int?>? toDateMap() {
