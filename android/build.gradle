@@ -27,6 +27,8 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
 
+    namespace 'co.sunnyapp.flutter_contact'
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
