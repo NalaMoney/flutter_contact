@@ -125,6 +125,10 @@ void main() {
     Contact contact1 = Contact(
       givenName: "givenName",
       familyName: "familyName",
+      emails: [
+        Item(label: "home", value: "smartytime@gmail.com"),
+        Item(label: "work", value: "smartytime@gmail.com"),
+      ],
       phones: [
         PhoneNumber(label: "home", number: "1-480-227-4399"),
         PhoneNumber(label: "work", number: "4802274399"),
@@ -133,8 +137,9 @@ void main() {
 
     Contact dedup = contact1.removeDuplicates();
     expect(dedup.phones, hasLength(1));
-
+    expect(dedup.emails, hasLength(1));
     expect(contact1.phones, hasLength(2));
+    expect(contact1.emails, hasLength(2));
   });
 
   test('should update contact', () async {
@@ -164,9 +169,14 @@ void main() {
 
   test('should produce a valid merged contact', () {
     Contact contact1 =
-        Contact(givenName: "givenName", familyName: "familyName", phones: []);
+        Contact(givenName: "givenName", familyName: "familyName", emails: [
+      Item(label: "Home", value: "home@example.com"),
+      Item(label: "Work", value: "work@example.com"),
+    ], phones: []);
     Contact contact2 = Contact(familyName: "familyName", phones: [
       Item(label: "Mobile", value: "111-222-3344")
+    ], emails: [
+      Item(label: "Mobile", value: "mobile@example.com"),
     ]);
     Contact mergedContact =
         Contact(givenName: "givenName", familyName: "familyName", phones: [

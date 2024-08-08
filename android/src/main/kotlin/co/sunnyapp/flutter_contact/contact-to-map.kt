@@ -10,6 +10,7 @@ fun Contact.toMap() = mutableMapOf(
         "suffix" to suffix,
         "avatar" to avatar,
         "phones" to phones.toItemMap(),
+        "emails" to emails.toItemMap(),
         "unifiedContactId" to unifiedContactId?.toString(),
         "singleContactId" to singleContactId?.toString(),
         "otherKeys" to mapOf("lookupKey" to keys?.lookupKey).filterValuesNotNull(),

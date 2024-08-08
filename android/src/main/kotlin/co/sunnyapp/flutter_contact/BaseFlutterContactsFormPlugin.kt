@@ -172,6 +172,13 @@ fun Contact.applyToIntent(mode: ContactMode, intent: Intent) {
                 .withTypeAndLabel(ItemType.phone, phone.label)
     }
 
+    //Emails
+    for (email in contact.emails) {
+        inboundData += contentValues(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email.value)
+                .withTypeAndLabel(ItemType.email, email.label)
+    }
+
     intent.apply {
         putExtra(ContactsContract.Intents.Insert.PHONE, phones.firstOrNull()?.value)
         putExtra(ContactsContract.Intents.Insert.NAME, listOfNotNull(contact.givenName, contact.familyName).let {

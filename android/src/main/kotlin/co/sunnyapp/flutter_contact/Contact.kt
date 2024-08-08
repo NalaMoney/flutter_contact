@@ -106,6 +106,7 @@ data class Contact(
         var prefix: String? = null,
         var suffix: String? = null,
         val phones: MutableList<Item> = mutableListOf(),
+        val emails: MutableList<Item> = mutableListOf(),
         /// read-only
         val linkedContactIds: MutableList<String> = mutableListOf(),
 

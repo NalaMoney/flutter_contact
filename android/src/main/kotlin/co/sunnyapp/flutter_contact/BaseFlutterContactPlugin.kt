@@ -122,6 +122,15 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
                     .build()
         }
 
+        //Emails
+        for (email in contact.emails) {
+            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email.value)
+                    .withTypeAndLabel(ItemType.email, email.label)
+                    .build()
+        }
 
         val saveResult = resolver.applyBatch(ContactsContract.AUTHORITY, ops)
         val contactId = saveResult.first().uri?.lastPathSegment?.toLong()
@@ -147,7 +156,8 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
         val ops = arrayListOf<ContentProviderOperation>()
 
         ops += listOf(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE
+                ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
+                ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
         ).map {
             ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
                     .withSelection(ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
@@ -188,6 +198,14 @@ abstract class BaseFlutterContactPlugin : ContactExtensions, EventChannel.Stream
                     .build()
         }
 
+        for (email in contact.emails) {
+            ops += ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier?.toString())
+                    .withValue(ContactsContract.CommonDataKinds.Email.ADDRESS, email.value)
+                    .withTypeAndLabel(ItemType.email, email.label)
+                    .build()
+        }
 
         resolver.applyBatch(ContactsContract.AUTHORITY, ops)
         val updated = getContact(contact.keys
