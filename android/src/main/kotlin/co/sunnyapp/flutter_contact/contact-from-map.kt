@@ -30,6 +30,7 @@ fun Contact.Companion.fromMap(mode: ContactMode, map: Map<String, *>): Contact {
             avatar = (map["avatar"] as? ByteArray?),
             linkedContactIds = map["linkedContactIds"].orEmptyList<String>().toMutableList(),
             phones = (map["phones"] as? StructList?).toItemList(),
+            emails = (map["emails"] as? StructList?).toItemList(),
     )
 }
 

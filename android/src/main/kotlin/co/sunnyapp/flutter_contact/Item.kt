@@ -28,6 +28,7 @@ sealed class ItemType(val otherType: Int, val labelField: String, val typeField:
     }
 
     companion object {
+        val email = EmailType()
         val phone = PhoneType()
     }
 }
@@ -68,3 +69,4 @@ fun ContentProviderOperation.Builder.withTypeAndLabel(type: ItemType, labelStrin
 }
 
 fun Cursor.getPhoneLabel() = ItemType.phone.getTypeValue(this)
+fun Cursor.getEmailLabel() = ItemType.email.getTypeValue(this)

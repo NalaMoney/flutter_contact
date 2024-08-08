@@ -283,6 +283,21 @@ extension CNContact {
             result["phones"] = phoneNumbers
         }
         
+        if contact.isKeyAvailable(CNContactEmailAddressesKey) {
+            //Emails
+            var emailAddresses = [[String:String]]()
+            for email in contact.emailAddresses{
+                var emailDictionary = [String:String]()
+                emailDictionary["value"] = String(email.value)
+                emailDictionary["label"] = "other"
+                if let label = email.label{
+                    emailDictionary["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
+                }
+                emailAddresses.append(emailDictionary)
+            }
+            result["emails"] = emailAddresses
+        }
+        
         return result
     }
     
@@ -328,6 +343,18 @@ extension CNMutableContact {
                 }
             }
             contact.phoneNumbers = updatedPhoneNumbers
+        }
+        
+        //Emails
+        if let emails = dictionary["emails"] as? [[String:String]]{
+            var updatedEmails = [CNLabeledValue<NSString>]()
+            for email in emails where nil != email["value"] {
+                let emailLabel = email["label"] ?? ""
+                if let emailValue = email["value"] {
+                    updatedEmails.append(CNLabeledValue(label: emailLabel, value: emailValue as NSString))
+                }
+            }
+            contact.emailAddresses = updatedEmails
         }
     }
 }

@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart'
-    hide IterableExtension, IterableNullableExtension;
+import 'package:collection/collection.dart' hide IterableExtension, IterableNullableExtension;
 import 'package:dartxx/dartxx.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flexidate/flexidate.dart';
@@ -160,9 +159,11 @@ class Contact {
       this.prefix,
       this.suffix,
       this.familyName,
+      List<Item>? emails,
       List<Item>? phones,
       this.avatar})
-      : _phones = [...?phones];
+      : _emails = [...?emails],
+       _phones = [...?phones];
 
   final ContactKeys? keys;
 
@@ -175,6 +176,7 @@ class Contact {
       familyName;
 
   final List<Item> _phones;
+  final List<Item> _emails;
 
   Uint8List? avatar;
 
@@ -197,6 +199,13 @@ class Contact {
   set phones(List<Item>? value) {
     _phones.clear();
     phones.addAll([...?value]);
+  }
+
+  List<Item> get emails => _emails;
+
+  set emails(List<Item>? value) {
+    _emails.clear();
+    emails.addAll([...?value]);
   }
 
   bool get hasAvatar => avatar?.isNotEmpty == true;
@@ -227,7 +236,9 @@ class Contact {
       familyName: dyn[_kfamilyName] as String?,
       prefix: dyn[_kprefix] as String?,
       keys: ContactKeys.of(mode, dyn),
-      suffix: dyn[_ksuffix] as String?,     
+      suffix: dyn[_ksuffix] as String?, 
+      emails: [for (final m in _iterableKey(dyn, _kemails)) Item.fromMap(m)]
+          .notNullList(),
       phones: [for (final m in _iterableKey(dyn, _kphones)) Item.fromMap(m)]
           .notNullList(),
       avatar: dyn[_kavatar] as Uint8List?,
@@ -249,6 +260,7 @@ class Contact {
       prefix: this.prefix ?? other.prefix,
       suffix: this.suffix ?? other.suffix,
       familyName: this.familyName ?? other.familyName,
+      emails: {...this.emails, ...other.emails}.toList(),
       phones: {...this.phones, ...other.phones}.toList(),
       avatar: this.avatar ?? other.avatar);
 
@@ -269,6 +281,7 @@ class Contact {
         this.middleName == other.middleName &&
         this.prefix == other.prefix &&
         this.suffix == other.suffix &&
+        DeepCollectionEquality.unordered().equals(this.emails, other.emails) &&
         DeepCollectionEquality.unordered().equals(this.phones, other.phones);
   }
 
@@ -371,6 +384,7 @@ Map<String, dynamic> _contactToMap(Contact contact) {
     _kotherKeys: contact.otherKeys,
     _kprefix: contact.prefix,
     _ksuffix: contact.suffix,
+    _kemails: contact.emails.toJson(),
     _kphones: contact.phones.toJson(),
     _kavatar: contact.avatar,
   }.valuesNotNull();
@@ -420,6 +434,7 @@ const _kfamilyName = "familyName";
 const _kunifiedContactId = "unifiedContactId";
 const _ksingleContactId = "singleContactId";
 const _kotherKeys = "otherKeys";
+const _kemails = "emails";
 const _kphones = "phones";
 const _kavatar = "avatar";
 

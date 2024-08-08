@@ -65,6 +65,12 @@ private val contactProjections: Array<String> = arrayOf(
         CommonDataKinds.Phone.TYPE,
         CommonDataKinds.Phone.LABEL,
 
+        /// Email
+        CommonDataKinds.Email.DATA,
+        CommonDataKinds.Email.ADDRESS,
+        CommonDataKinds.Email.TYPE,
+        CommonDataKinds.Email.LABEL,
+
         Data.DATA1,
         Data.DATA2,
         Data.DATA3)

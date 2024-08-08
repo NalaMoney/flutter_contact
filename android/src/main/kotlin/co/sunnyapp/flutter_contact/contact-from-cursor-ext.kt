@@ -28,6 +28,7 @@ interface ContactExtensions {
         var selectionArgs = when (forCount) {
             true -> arrayOf()
             false -> arrayOf(
+                    CommonDataKinds.Email.CONTENT_ITEM_TYPE,
                     CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
                     CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
             )
@@ -135,6 +136,13 @@ interface ContactExtensions {
                             contact.phones += Item(label = cursor.getPhoneLabel(), value = phone)
                         }
                     }
+
+                    CommonDataKinds.Email.CONTENT_ITEM_TYPE -> {
+                        cursor.string(CommonDataKinds.Email.ADDRESS)?.also { email ->
+                            contact.emails += Item(label = cursor.getEmailLabel(), value = email)
+                        }
+                    }
+
                 }
             }
         } finally {

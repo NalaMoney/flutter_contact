@@ -39,7 +39,8 @@ public class SwiftFlutterContactPlugin: NSObject, FlutterPlugin {
                                   CNContactMiddleNameKey,
                                   CNContactNamePrefixKey,
                                   CNContactNameSuffixKey,
-                                  CNContactThumbnailImageDataKey,                            
+                                  CNContactThumbnailImageDataKey,
+                                  CNContactEmailAddressesKey,                            
                                   CNContactPhoneNumbersKey]
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
