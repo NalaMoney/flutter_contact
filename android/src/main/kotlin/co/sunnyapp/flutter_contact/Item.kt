@@ -59,6 +59,24 @@ class PhoneType : ItemType(otherType = Phone.TYPE_CUSTOM, labelField = Phone.LAB
     }
 }
 
+class EmailType : ItemType(otherType = Email.TYPE_CUSTOM, labelField = Email.LABEL, typeField = Email.TYPE) {
+    override fun calculateTypeInt(type: String?): Int {
+        return when (type?.toLowerCase()) {
+            "home" -> Email.TYPE_HOME
+            "work" -> Email.TYPE_WORK
+            "mobile" -> Email.TYPE_MOBILE
+            else -> Email.TYPE_CUSTOM
+        }
+    }
+
+    override fun calculateTypeValue(type: Int) = when (type) {
+        Email.TYPE_HOME -> "home"
+        Email.TYPE_WORK -> "work"
+        Email.TYPE_MOBILE -> "mobile"
+        else -> null
+    }
+}
+
 fun ContentProviderOperation.Builder.withTypeAndLabel(type: ItemType, labelString: String?): ContentProviderOperation.Builder {
     val label = labelString ?: return this
     return when (val typeInt = type.calculateTypeInt(label)) {
